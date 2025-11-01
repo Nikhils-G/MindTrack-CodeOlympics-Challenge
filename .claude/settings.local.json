@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:codeolympics.com)",
+      "Bash(node:*)",
+      "Bash(python:*)",
+      "Bash(start:*)",
+      "Bash(echo:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

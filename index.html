@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindTrack - Mental Wellness Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-bg: #1a1a2e;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mood-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .mood-btn {
+            padding: 12px 8px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 12px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.9);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .mood-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .mood-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
+            border-color: rgba(102, 126, 234, 0.4);
+        }
+
+        .mood-btn:hover::before {
+            width: 100px;
+            height: 100px;
+        }
+
+        .mood-btn span {
+            position: relative;
+            z-index: 1;
+            transition: transform 0.2s ease;
+            display: block;
+        }
+
+        .mood-btn:hover span {
+            transform: scale(1.1);
+        }
+
+        .mood-btn.selected {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Lucination Effects */
+        .lucination-orb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            position: relative;
+            margin: 0 auto;
+            transition: var(--transition);
+        }
+
+        .lucination-orb::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff, #06d6a0, #ffd60a);
+            background-size: 400% 400%;
+            animation: gradientShift 4s ease infinite;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            filter: blur(3px);
+        }
+
+        .lucination-orb::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            filter: blur(1px);
+        }
+
+        .mood-1 .lucination-orb {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            box-shadow: 0 0 10px rgba(30, 60, 114, 0.5);
+        }
+
+        .mood-2 .lucination-orb {
+            background: linear-gradient(135deg, #373b44, #4286f4);
+            box-shadow: 0 0 15px rgba(66, 134, 244, 0.5);
+        }
+
+        .mood-3 .lucination-orb {
+            background: linear-gradient(135deg, #6a85b6, #bac8e0);
+            box-shadow: 0 0 20px rgba(186, 200, 224, 0.5);
+        }
+
+        .mood-4 .lucination-orb {
+            background: linear-gradient(135deg, #f47068, #ff8b94);
+            box-shadow: 0 0 25px rgba(255, 139, 148, 0.5);
+        }
+
+        .mood-5 .lucination-orb {
+            background: linear-gradient(135deg, #ffd93d, #ffed4e);
+            box-shadow: 0 0 30px rgba(255, 237, 78, 0.7);
+        }
+
+        .mood-btn:hover .lucination-orb::before,
+        .mood-btn.selected .lucination-orb::before {
+            opacity: 1;
+            animation: gradientShift 2s ease infinite, pulse 1.5s ease-in-out infinite;
+        }
+
+        .mood-btn:hover .lucination-orb::after,
+        .mood-btn.selected .lucination-orb::after {
+            opacity: 1;
+        }
+
+        .mood-btn:hover .lucination-orb,
+        .mood-btn.selected .lucination-orb {
+            transform: scale(1.2);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Floating particles for lucination effect */
+        .lucination-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .lucination-particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatParticle 3s ease-in-out infinite;
+        }
+
+        .mood-btn:hover .lucination-particles .lucination-particle,
+        .mood-btn.selected .lucination-particles .lucination-particle {
+            opacity: 1;
+        }
+
+        .lucination-particle:nth-child(1) { animation-delay: 0s; top: 20%; left: 10%; }
+        .lucination-particle:nth-child(2) { animation-delay: 0.3s; top: 50%; left: 80%; }
+        .lucination-particle:nth-child(3) { animation-delay: 0.6s; top: 80%; left: 20%; }
+        .lucination-particle:nth-child(4) { animation-delay: 0.9s; top: 10%; left: 60%; }
+        .lucination-particle:nth-child(5) { animation-delay: 1.2s; top: 70%; left: 50%; }
+
+        @keyframes floatParticle {
+            0%, 100% {
+                transform: translateY(0px) scale(0);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(-10px) scale(1);
+            }
+            80% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1);
+            }
+        }
+
+        .mood-label {
+            display: block;
+            font-size: 0.7rem;
+            margin-top: 4px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .input-group {
+            margin: 16px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid rgba(102, 126, 234, 0.15);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.9);
+            font-family: inherit;
+        }
+
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .input-group select {
+            cursor: pointer;
+            height: auto;
+        }
+
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.85rem;
+        }
+
+        .activity-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        .activity-item.selected {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .activity-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            margin-right: 8px;
+            opacity: 0.6;
+        }
+
+        .btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.4s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,249,250,0.9));
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+            animation: countUp 0.8s ease-out;
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .entries-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .entries-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .entries-list::-webkit-scrollbar-track {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 6px;
+        }
+
+        .entries-list::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 6px;
+        }
+
+        .entry {
+            background: linear-gradient(135deg, rgba(248,249,250,0.9), rgba(240,242,247,0.9));
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border-left: 3px solid #667eea;
+            transition: var(--transition);
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-15px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .entry:hover {
+            transform: translateX(3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .entry-date {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .entry-mood {
+            font-size: 1.2rem;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .entry-activities {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+
+        .entry-notes {
+            font-style: italic;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .insight {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            padding: 16px;
+            border-radius: 10px;
+            margin: 16px 0;
+            border-left: 3px solid #f39c12;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 8px rgba(243, 156, 18, 0.2); }
+            to { box-shadow: 0 0 16px rgba(243, 156, 18, 0.3); }
+        }
+
+        .insight h3 {
+            color: #2d3748;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 1rem;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success-gradient);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(67, 233, 123, 0.3);
+            animation: slideInRight 0.4s ease-out;
+            z-index: 1000;
+            font-size: 0.9rem;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(80px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+
+            .mood-selector {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 8px;
+            }
+
+            .mood-btn {
+                padding: 10px 6px;
+                font-size: 1.4rem;
+            }
+
+            .mood-label {
+                font-size: 0.65rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .activity-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Compact mode */
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 12px;
+            }
+
+            .mood-btn {
+                padding: 8px 4px;
+                font-size: 1.2rem;
+            }
+
+            .mood-label {
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MindTrack</h1>
+            <p>Your Mental Wellness Companion</p>
+        </div>
+
+        <div class="card" id="checkinCard">
+            <h2>Daily Check-in</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.9rem;">How are you feeling today?</p>
+
+            <div class="mood-selector">
+                <button class="mood-btn mood-1" data-mood="1" onclick="selectMood(1)">
+                    <div class="lucination-particles">
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                    </div>
+                    <div class="lucination-orb"></div>
+                    <span class="mood-label">Very Low</span>
+                </button>
+                <button class="mood-btn mood-2" data-mood="2" onclick="selectMood(2)">
+                    <div class="lucination-particles">
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                    </div>
+                    <div class="lucination-orb"></div>
+                    <span class="mood-label">Low</span>
+                </button>
+                <button class="mood-btn mood-3" data-mood="3" onclick="selectMood(3)">
+                    <div class="lucination-particles">
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                    </div>
+                    <div class="lucination-orb"></div>
+                    <span class="mood-label">Neutral</span>
+                </button>
+                <button class="mood-btn mood-4" data-mood="4" onclick="selectMood(4)">
+                    <div class="lucination-particles">
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                    </div>
+                    <div class="lucination-orb"></div>
+                    <span class="mood-label">Good</span>
+                </button>
+                <button class="mood-btn mood-5" data-mood="5" onclick="selectMood(5)">
+                    <div class="lucination-particles">
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                        <div class="lucination-particle"></div>
+                    </div>
+                    <div class="lucination-orb"></div>
+                    <span class="mood-label">Excellent</span>
+                </button>
+            </div>
+
+            <div class="input-group">
+                <label>Today's Activities:</label>
+                <div class="activity-grid">
+                    <div class="activity-item" data-activity="exercise" onclick="toggleActivity(this)">
+                        <span class="activity-indicator"></span>
+                        <span>Exercise</span>
+                    </div>
+                    <div class="activity-item" data-activity="meditation" onclick="toggleActivity(this)">
+                        <span class="activity-indicator"></span>
+                        <span>Meditation</span>
+                    </div>
+                    <div class="activity-item" data-activity="work" onclick="toggleActivity(this)">
+                        <span class="activity-indicator"></span>
+                        <span>Work</span>
+                    </div>
+                    <div class="activity-item" data-activity="social" onclick="toggleActivity(this)">
+                        <span class="activity-indicator"></span>
+                        <span>Social</span>
+                    </div>
+                    <div class="activity-item" data-activity="hobby" onclick="toggleActivity(this)">
+                        <span class="activity-indicator"></span>
+                        <span>Hobby</span>
+                    </div>
+                    <div class="activity-item" data-activity="sleep" onclick="toggleActivity(this)">
+                        <span class="activity-indicator"></span>
+                        <span>Sleep</span>
+                    </div>
+                    <div class="activity-item" data-activity="nature" onclick="toggleActivity(this)">
+                        <span class="activity-indicator"></span>
+                        <span>Nature</span>
+                    </div>
+                    <div class="activity-item" data-activity="reading" onclick="toggleActivity(this)">
+                        <span class="activity-indicator"></span>
+                        <span>Reading</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Notes:</label>
+                <textarea id="notes" rows="2" placeholder="Any thoughts you'd like to record..."></textarea>
+            </div>
+
+            <button class="btn" onclick="saveEntry()">
+                Save Entry
+            </button>
+        </div>
+
+        <div class="card">
+            <h2>Your Wellness Stats</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalDays">0</div>
+                    <div class="stat-label">Total Days</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgMood">0</div>
+                    <div class="stat-label">Avg Mood</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="currentStreak">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="bestMood">0</div>
+                    <div class="stat-label">Best Mood</div>
+                </div>
+            </div>
+            <div id="insights" class="hidden">
+                <h3>Personal Insights</h3>
+                <div id="insightText" class="insight"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Recent Entries</h2>
+            <div id="entriesList" class="entries-list"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Activity selection handling
+        function toggleActivity(element) {
+            element.classList.toggle('selected');
+        }
+
+        // Get selected activities
+        function getSelectedActivities() {
+            return Array.from(document.querySelectorAll('.activity-item.selected'))
+                .map(item => item.dataset.activity);
+        }
+
+        // Override the getSelectedActivities method in wellnessApp
+        if (typeof wellnessApp !== 'undefined') {
+            wellnessApp.getSelectedActivities = getSelectedActivities;
+        }
+    </script>
+</body>
+</html>
