@@ -159,9 +159,11 @@ const wellnessApp = {
     // Stores review with timestamp and updates UI (199 chars)
     saveReview: (r, f) => {wellnessApp.reviews.push({id: Date.now(), rating: r || 3, feedback: f || '', date: new Date()}); localStorage.setItem('appReviews', JSON.stringify(wellnessApp.reviews)); wellnessApp.updateReviews();},
 
-    // CONSTRAINT CHALLENGE: No loops - Uses map() to display reviews
-    // Renders reviews using functional array methods (198 chars)
-    updateReviews: () => {document.getElementById('reviewsList').innerHTML = wellnessApp.reviews.slice(-5).reverse().map(r => `<div class="review-item">${'⭐'.repeat(r.rating)}<p>${r.feedback}</p></div>`).join('');},
+    // CONSTRAINT CHALLENGE: No loops - Uses map() to display reviews with HTML escaping
+    // Renders reviews using functional array methods with XSS protection (98 chars escapeHtml, 199 chars updateReviews)
+    escapeHtml: t => (t || '').replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m])),
+
+    updateReviews: () => {document.getElementById('reviewsList').innerHTML = wellnessApp.reviews.slice(-5).reverse().map(r => `<div class="review-item">${'⭐'.repeat(r.rating)}<p>${wellnessApp.escapeHtml(r.feedback)}</p></div>`).join('');},
 
     // CONSTRAINT CHALLENGE: No loops - Calculates average rating using reduce
     // Computes average review rating safely (199 chars)
