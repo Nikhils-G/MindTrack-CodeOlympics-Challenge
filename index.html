@@ -663,6 +663,39 @@
                 font-size: 0.6rem;
             }
         }
+
+        /* Review section styles */
+        .review-rating-select {
+            font-size: 1rem;
+            padding: 12px;
+            cursor: pointer;
+        }
+
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .review-item {
+            background: rgba(102, 126, 234, 0.05);
+            border-left: 3px solid var(--primary-gradient);
+            padding: 12px;
+            border-radius: 8px;
+            animation: slideInRight 0.4s ease;
+        }
+
+        .review-rating {
+            font-size: 1rem;
+            margin-bottom: 6px;
+            color: #ffd93d;
+        }
+
+        .review-text {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -811,6 +844,34 @@
         <div class="card">
             <h2>Recent Entries</h2>
             <div id="entriesList" class="entries-list"></div>
+        </div>
+
+        <div class="card">
+            <h2>Rate MindTrack</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.9rem;">Share your experience with us!</p>
+            
+            <div class="input-group">
+                <label for="reviewRating">Your Rating:</label>
+                <select id="reviewRating" class="review-rating-select">
+                    <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                    <option value="4">⭐⭐⭐⭐ Good</option>
+                    <option value="3" selected>⭐⭐⭐ Neutral</option>
+                    <option value="2">⭐⭐ Poor</option>
+                    <option value="1">⭐ Very Poor</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="reviewFeedback">Your Feedback:</label>
+                <textarea id="reviewFeedback" rows="3" placeholder="Tell us what you think about MindTrack..."></textarea>
+            </div>
+
+            <button class="btn" onclick="saveReview()">
+                Submit Review
+            </button>
+
+            <h3 style="margin-top: 24px; margin-bottom: 12px;">Recent Reviews</h3>
+            <div id="reviewsList" class="reviews-list"></div>
         </div>
     </div>
 
