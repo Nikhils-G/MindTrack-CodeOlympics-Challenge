@@ -163,11 +163,11 @@ const wellnessApp = {
     // Renders reviews using functional array methods with XSS protection (98 chars escapeHtml, 199 chars updateReviews)
     escapeHtml: t => (t || '').replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m])),
 
-    updateReviews: () => {document.getElementById('reviewsList').innerHTML = wellnessApp.reviews.slice(-5).reverse().map(r => `<div class="review-item">${'⭐'.repeat(r.rating)}<p>${wellnessApp.escapeHtml(r.feedback)}</p></div>`).join('');},
+    updateReviews: () => {document.getElementById('reviewsList').innerHTML = wellnessApp.reviews.slice(-5).reverse().map(r => `<div class="review-item">${'⭐'.repeat(r.rating || 0)}<p>${wellnessApp.escapeHtml(r.feedback)}</p></div>`).join('');},
 
     // CONSTRAINT CHALLENGE: No loops - Calculates average rating using reduce
-    // Computes average review rating safely (199 chars)
-    avgRating: () => (wellnessApp.reviews.reduce((s, r) => s + (r.rating || 0), 0) / wellnessApp.reviews.length || 0).toFixed(1)
+    // Computes average review rating safely with division by zero protection (199 chars)
+    avgRating: () => (wellnessApp.reviews.reduce((s, r) => s + (r.rating || 0), 0) / (wellnessApp.reviews.length || 1)).toFixed(1)
 };
 
 // Global functions for HTML event handlers
