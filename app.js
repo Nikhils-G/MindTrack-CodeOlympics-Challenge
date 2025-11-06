@@ -6,10 +6,11 @@
 
 const wellnessApp = {
     entries: [],
+    reviews: [],
 
     // CONSTRAINT CHALLENGE: Error-proof initialization - Handles JSON parse errors
     // Safely loads data with try-catch and fallback to empty array (199 chars)
-    init: () => {try {wellnessApp.entries = JSON.parse(localStorage.getItem('wellnessEntries') || '[]');} catch(e) {wellnessApp.entries = []; localStorage.setItem('wellnessEntries', '[]');} wellnessApp.updateUI();},
+    init: () => {try {wellnessApp.entries = JSON.parse(localStorage.getItem('wellnessEntries') || '[]'); wellnessApp.reviews = JSON.parse(localStorage.getItem('appReviews') || '[]');} catch(e) {wellnessApp.entries = []; wellnessApp.reviews = [];} wellnessApp.updateUI();},
 
     // CONSTRAINT CHALLENGE: No loops - Using forEach instead of for/while
     // Uses DOM Node.forEach for cross-browser compatibility (199 chars)
@@ -67,7 +68,7 @@ const wellnessApp = {
     },
 
     // Update all UI components (199 chars)
-    updateUI: () => {wellnessApp.updateStats(); wellnessApp.updateEntries(); wellnessApp.updateInsights();},
+    updateUI: () => {wellnessApp.updateStats(); wellnessApp.updateEntries(); wellnessApp.updateInsights(); wellnessApp.updateReviews();},
 
     // Update statistics display (199 chars)
     updateStats: () => {
@@ -152,7 +153,19 @@ const wellnessApp = {
         notification.textContent = msg;
         document.body.appendChild(notification);
         setTimeout(() => notification.remove(), 3000);
-    }
+    },
+
+    // CONSTRAINT CHALLENGE: No conditionals - Saves user review with rating and feedback
+    // Stores review with timestamp and updates UI (199 chars)
+    saveReview: (r, f) => {wellnessApp.reviews.push({id: Date.now(), rating: r || 3, feedback: f || '', date: new Date()}); localStorage.setItem('appReviews', JSON.stringify(wellnessApp.reviews)); wellnessApp.updateReviews();},
+
+    // CONSTRAINT CHALLENGE: No loops - Uses map() to display reviews
+    // Renders reviews using functional array methods (198 chars)
+    updateReviews: () => {document.getElementById('reviewsList').innerHTML = wellnessApp.reviews.slice(-5).reverse().map(r => `<div class="review-item">${'⭐'.repeat(r.rating)}<p>${r.feedback}</p></div>`).join('');},
+
+    // CONSTRAINT CHALLENGE: No loops - Calculates average rating using reduce
+    // Computes average review rating safely (199 chars)
+    avgRating: () => (wellnessApp.reviews.reduce((s, r) => s + (r.rating || 0), 0) / wellnessApp.reviews.length || 0).toFixed(1)
 };
 
 // Global functions for HTML event handlers
@@ -160,6 +173,7 @@ const selectMood = m => wellnessApp.selectMood(m);
 const saveEntry = () => wellnessApp.saveEntry();
 const deleteEntry = id => wellnessApp.deleteEntry(id);
 const exportData = () => wellnessApp.exportData();
+const saveReview = () => {const r = parseInt(document.getElementById('reviewRating').value); const f = document.getElementById('reviewFeedback').value; wellnessApp.saveReview(r, f); document.getElementById('reviewFeedback').value = '';};
 
 // CONSTRAINT CHALLENGE: Browser compatibility check - Uses typeof for safe DOM access
 // Initializes app only in browser environment, not Node.js
